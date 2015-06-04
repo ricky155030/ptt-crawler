@@ -1,4 +1,8 @@
+from datetime import datetime
+import pytz
+
 class Post(object):
+
     def __init__(self, url):
         self.__url = url
         self.__good = 0
@@ -7,7 +11,7 @@ class Post(object):
         self.__images = list()
         self.__title = str()
         self.__messages = list()
-        self.__date = str()
+        self.__date = datetime(2015, 1, 1, 0, 0, 0).replace(tzinfo=pytz.timezone('Asia/Taipei'))
         self.__contents = str()
         self.__author = str()
 
@@ -41,7 +45,7 @@ class Post(object):
 
     @date.setter
     def date(self, value):
-        self.__date = value
+        self.__date = datetime.strptime(value, "%a %b %d %H:%M:%S %Y").replace(tzinfo=pytz.timezone('Asia/Taipei'))
 
     @property
     def good(self):
@@ -98,3 +102,4 @@ class Post(object):
     @author.setter
     def author(self, value):
         self.__author = value
+
