@@ -1,11 +1,24 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
 import re
 import sys
 import requests
+sys.path.append('/home/hungwei/project/ptt-beauty-img-retriever/')
+import storage
+import logging
 from bs4 import BeautifulSoup
 from post import Post
 
+logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+logger = logging.getLogger(__name__)
+
+# Disable module logging
+logging.getLogger("requests").setLevel(logging.WARNING)
+logging.getLogger("urllib3").setLevel(logging.WARNING)
 
 class PTTCrawler(object):
+
 
     def __init__(self, board_name):
         self.board_name = board_name
@@ -16,8 +29,7 @@ class PTTCrawler(object):
         # Get url from index start to end
         for index in range(start, end+1):
             resp = requests.get(
-                url="http://www.ptt.cc/bbs/{}/index{}.html".
-                    format(self.board_name, index),
+                url="http://www.ptt.cc/bbs/{}/index{}.html".format(self.board_name, index),
                 cookies={"over18": "1"}
             )
             soup = BeautifulSoup(resp.text)
@@ -146,11 +158,26 @@ class PTTCrawler(object):
             if tag.contents[0] == '‹ 上頁':
                 return int(re.findall('index(.*?).html', tag.attrs.get('href'))[0])
 
+    def save_post(self, post):
+        db = storage.Storage()
+        data = {
+            'title'  : post.title,
+            'author' : post.author,
+            'images' : ','.join(post.images),
+            'good'   : post.good,
+            'bad'    : post.bad,
+            'normal' : post.normal,
+            'date'   : post.date
+        }
+
+        db.insert_update('posts', data)
+
 if __name__ == "__main__":
     p = PTTCrawler("Beauty")
     anchor = p.get_index_max()
-    p.get_posts_url(anchor, anchor, 10)
-    all_posts = p.parse_all_posts(author=False, contents=False)
+    p.get_posts_url(anchor-30, anchor, 10)
+    all_posts = p.parse_all_posts(author=True, contents=False)
 
     for i in all_posts:
-        print("%3s %10s %s" % (i.score, i.date, i.title))
+        p.save_post(i)
+        # print("%3s %10s %s %s" % (i.score, i.date, i.title, i.images))

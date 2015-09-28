@@ -1,3 +1,13 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+"""
+File: post.py
+Author: hungwei kao
+Email: hungwei.kao@gmail.com
+Github: https://github.com/ricky155030
+Description: Class Post
+"""
+
 from datetime import datetime
 import pytz
 
@@ -102,4 +112,3 @@ class Post(object):
     @author.setter
     def author(self, value):
         self.__author = value
-
