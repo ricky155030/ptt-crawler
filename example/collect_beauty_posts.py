@@ -9,10 +9,11 @@ hostname = ''
 username = ''
 password = ''
 dbname = ''
+table = ''
 
-storage = storage.Storage(hostname, username, password, dbname)
+database = storage.Storage(hostname, username, password, dbname)
 
-def save_post(post, table):
+def save_post(post):
     data = {
         'title'  : post.title,
         'author' : post.author,
@@ -23,7 +24,7 @@ def save_post(post, table):
         'date'   : post.date
     }
 
-    storage.insert_update(table, data)
+    database.insert_update(table, data)
 
 if __name__ == "__main__":
     crawler = pttcrawler.PTTCrawler("Beauty")
@@ -33,5 +34,5 @@ if __name__ == "__main__":
     all_posts = crawler.parse_all_posts(author=True, contents=False)
 
     for post in all_posts:
-        if(len(post.images) != 0):
-            save_post(post, 'posts')
+        if len(post.images) != 0 and post.title.find("公告") == -1:
+            save_post(post)
