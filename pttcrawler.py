@@ -91,8 +91,9 @@ class PTTCrawler(object):
 
         post_objects = list()
         for url in self.post_urls:
-            soup = self._get_soup("http://www.ptt.cc/bbs/{}/{}".format(self.board_name, url))
-            post = Post(url)
+            post_url = "http://www.ptt.cc/bbs/{}/{}".format(self.board_name, url)
+            soup = self._get_soup(post_url)
+            post = Post(post_url)
 
             try:
                 article_meta = soup.find_all('span', class_="article-meta-value")
